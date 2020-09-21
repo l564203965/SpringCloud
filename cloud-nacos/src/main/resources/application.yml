@@ -1,0 +1,82 @@
+server:
+  port: 9998
+
+spring:
+  profiles:
+    active: dev
+  datasource:
+    type: com.alibaba.druid.pool.DruidDataSource #Druid连接池
+    url: jdbc:mysql://122.51.89.168:3306/springboot?allowMultiQueries=true&autoReconnect=true&failOverReadOnly=false&maxReconnects=10&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
+    username: root #数据库用户名
+    password: liweng45 #数据库密码
+    driver-class-name: com.mysql.cj.jdbc.Driver #mysql驱动
+    initialSize: 10 #初始化连接池大小
+    minIdle: 10 #初始化最小连接池数量
+    maxActive: 100 #初始化最大连接池数量
+    maxWait: 6000 #配置获取连接等待超时的时间
+    timeBetweenEvictionRunsMills: 6000 #配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒
+    minEvictableIdleTimeMillis: 30000 #配置一个连接在池中最小生存的时间，单位是毫秒
+    validationQuery: SELECT 'x' #测试连接
+  redis:
+    #    cluster:
+    #      nodes: 1127.0.0.1:6379, 10.0.29.95:6379, 10.0.29.205:6379
+    host: 127.0.0.1
+    port: 6379
+    password:
+    timeout: 3600ms #超时时间
+    jedis:
+      pool:
+        max-active: 8 #最大连接数
+        max-idle: 8 #最大空闲连接 默认8
+        max-wait: -1ms #默认-1 最大连接阻塞等待时间
+        min-idle: 0 #最小空闲连接
+  cloud:
+    sentinel:
+      transport:
+        # 为应用开启额外的端口，上报监控信息
+        # 默认为8719端口，加入被占用将会自动从8719开始+1扫描，直至找到未被占用的端口地址
+        port: 8719
+        # sentinel dashboard的地址(sentinel的地址--8080监控当前9998微服务)
+        dashboard: localhost:8080
+      filter:
+        # 1、Sentinel 从 1.6.3版本开始，Sentinel Web Filter 默认收敛所有URL的入口Context，因此链路限流不生效。
+        # 2、1.7.0版本开始，官方在CommomFilter中引入了一个WEB_CONTEXT_UNIFY参数，用于控制是否收敛context。默认为true(默认收敛所有)，配置为false则可根据不同URL进行链路的限流操作。
+        # 3、Spring Cloud Alibaba 在2.1.1.RELEASE版本后，可以根据配置来关闭自动收敛
+        enabled: false
+
+mybatis:
+  mapper-locations: classpath:/mapper/*.xml
+
+#ribbon配置
+ribbon:
+  #对当前实例的重试次数
+  MaxAutoRetries: 1
+  #切换实例的重试次数
+  MaxAutoRetriesNextServer: 2
+  #请求处理的超时时间
+  ReadTimeout: 60000
+  #请求连接的超时时间
+  ConnectTimeout: 60000
+  #对所有操作请求都进行重试
+  OkToRetryOnAllOperations: true
+
+#feign配置
+feign:
+#  hystrix:
+#    enabled: true
+  sentinel:
+    enabled: true
+#  okhttp:
+#    enabled: true
+#  httpclient:
+#    enabled: false
+
+logging:
+  config: classpath:logback-spring.xml
+  level:
+    com.muses.taoshop: debug
+#  path: /data/logs
+# 日志级别
+#logging:
+#  level:
+#    root: DEBUG

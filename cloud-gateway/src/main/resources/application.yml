@@ -1,0 +1,90 @@
+server:
+  port: 9997
+
+nacos:
+  address: 127.0.0.1:8848
+  data-id: cloud-gateway #
+  group-id: DEFAULT_GROUP
+  timeout: 5000
+
+gateway:
+  secure:
+    skipUrl:
+      - /login
+      - /test
+
+spring:
+  profiles:
+    active: dev
+  cloud:
+    sentinel:
+      transport:
+        # 为应用开启额外的端口，上报监控信息
+        # 默认为8719端口，加入被占用将会自动从8719开始+1扫描，直至找到未被占用的端口地址
+        port: 8719
+        # sentinel dashboard的地址(sentinel的地址--8080监控当前9997微服务)
+        dashboard: localhost:8080
+      filter:
+        # 1、Sentinel 从 1.6.3版本开始，Sentinel Web Filter 默认收敛所有URL的入口Context，因此链路限流不生效。
+        # 2、1.7.0版本开始，官方在CommomFilter中引入了一个WEB_CONTEXT_UNIFY参数，用于控制是否收敛context。默认为true(默认收敛所有)，配置为false则可根据不同URL进行链路的限流操作。
+        # 3、Spring Cloud Alibaba 在2.1.1.RELEASE版本后，可以根据配置来关闭自动收敛
+        enabled: false
+    gateway:
+      enabled: true
+      discovery:
+        locator:
+          #enabled: true
+          lower-case-service-id: true
+      routes:
+        - id: consumer_route
+          uri: http://127.0.0.1:9998
+          filters:
+            # 统一添加参数foo=bar
+            - AddRequestParameter=foo, bar
+
+            # 当请求路径匹配到/name/**会将包含name和后边的字符串接去掉转发， StripPrefix=2就代表截取路径的个数，
+            # 这样配置后当请求/name/bar/foo后端匹配到的请求路径就会变成http://nameservice/foo
+            # - StripPrefix=2
+            # PrefixPath Filter 的作用和 StripPrefix 正相反，是在 URL 路径前面添加一部分的前缀
+            #- PrefixPath=/mypath
+
+            #此工厂将/gatewayRouter/(?.*)重写为{segment}
+            - RewritePath=/gatewayRouter/(?<segment>.*), /$\{segment}
+
+            #filter 名称必须是 RequestRateLimiter
+            #redis-rate-limiter.replenishRate：允许用户每秒处理多少个请求
+            #redis-rate-limiter.burstCapacity：令牌桶的容量，允许在一秒钟内完成的最大请求数
+            #key-resolver：使用 SpEL 按名称引用 bean
+            - name: RequestRateLimiter
+              args:
+                redis-rate-limiter.replenishRate: 10
+                redis-rate-limiter.burstCapacity: 20
+                key-resolver: "#{@userKeyResolver}"
+
+            #retries：重试次数，默认值是 3 次
+            #statuses：HTTP 的状态返回码，取值请参考：org.springframework.http.HttpStatus
+            #methods：指定哪些方法的请求需要进行重试逻辑，默认值是 GET 方法，取值参考：org.springframework.http.HttpMethod
+            #series：一些列的状态码配置，取值参考：org.springframework.http.HttpStatus.Series。符合的某段状态码才会进行重试逻辑，默认值是 SERVER_ERROR，值是 5，也就是 5XX(5 开头的状态码)，共有5 个值
+            - name: Retry
+              args:
+                retries: 3
+                statuses: BAD_GATEWAY
+          predicates:
+            - Path=/gatewayRouter/**
+            - After=2020-08-20T06:06:06+08:00[Asia/Shanghai]
+            #- Host=**.foo.org
+            #- Method=GET
+            #- Header=X-Request-Id, \d+
+            #- Query=foo, ba.
+            #- Query=baz
+            #- Cookie=chocolate, ch.p
+
+logging:
+  config: classpath:logback-spring.xml
+  level:
+    org.springframework.cloud.gateway: debug
+#  path: /data/logs
+# 日志级别
+#logging:
+#  level:
+#    root: DEBUG
