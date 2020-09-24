@@ -1,7 +1,7 @@
 # 网关-接入前置
 aps-gateway:
 #    restart: always
-  image: cloud-gateway-1.0.0
+  image: cloud-gateway:1.0.0
   container_name: cloud-gateway
 #  networks:
 #    chnet:
