@@ -1,5 +1,5 @@
 # 网关-接入前置
-aps-gateway:
+cloud-gateway:
 #    restart: always
   image: cloud-gateway
   container_name: cloud-gateway
