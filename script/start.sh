@@ -10,7 +10,7 @@ PARENT_PATH=cloud-gateway
 #docker 镜像/容器/项目名字或者jar名字数组 这里都使用项目名命名
 PROJECT_NAMES=("cloud-gateway") #("eureka-server" "feign-consumer" "api-gateway" "booking-service")
 #项目版本号/docker 容器tag,使用项目版本号来做tag，版本号要与项目数组PROJECT_NAMES一一对应
-PROJECT_VERSIONS=1.0.0
+PROJECT_VERSIONS=dev_0.0.1
 #docker容器暴露的端口，端口号要与项目数组PROJECT_NAMES一一对应，这里为了简化，docker容器端口与宿主机端口配置成一样的。
 EXPOSE_PORTS=("8081") #("1111" "9002" "5555" "8080")
 
@@ -37,18 +37,18 @@ function build(){
     for (( i = 0 ; i < ${#PROJECT_NAMES[@]} ; i++ ))
     do
         #镜像id
-        IID=$(docker images | grep "${PROJECT_NAMES[$i]:$PROJECT_VERSIONS}" | awk '{print $3}')
+        IID=$(docker images | grep "${PROJECT_NAMES[$i]:PROJECT_VERSIONS}" | awk '{print $3}')
         if [ -n "$IID" ]; then
-            echo "存在${PROJECT_NAMES[$i]:$PROJECT_VERSIONS}镜像，IID=$IID"
-            echo "删除${PROJECT_NAMES[$i]:$PROJECT_VERSIONS}镜像..."
+            echo "存在${PROJECT_NAMES[$i]:PROJECT_VERSIONS}镜像，IID=$IID"
+            echo "删除${PROJECT_NAMES[$i]:PROJECT_VERSIONS}镜像..."
             docker rmi $IID
             echo "重新构建镜像"
-            cd $BASE_PATH/$PARENT_PATH/${PROJECT_NAMES[$i]:$PROJECT_VERSIONS}
-            docker build -t ${PROJECT_NAMES[$i]:$PROJECT_VERSIONS} .
+            cd $BASE_PATH/$PARENT_PATH/${PROJECT_NAMES[$i]:PROJECT_VERSIONS}
+            docker build -t ${PROJECT_NAMES[$i]:PROJECT_VERSIONS} .
         else
-            echo "不存在${PROJECT_NAMES[$i]:$PROJECT_VERSIONS}镜像，开始构建镜像"
+            echo "不存在${PROJECT_NAMES[$i]:PROJECT_VERSIONS}镜像，开始构建镜像"
             cd $BASE_PATH/$PARENT_PATH/${PROJECT_NAMES[$i]}
-            docker build -t ${PROJECT_NAMES[$i]:$PROJECT_VERSIONS} .
+            docker build -t ${PROJECT_NAMES[$i]:PROJECT_VERSIONS} .
         fi
     done
 
