@@ -1,12 +1,12 @@
 #docker运行服务URL
 #操作//项目路径(Dockerfile存放的路劲)
-BASE_PATH=/app/web/jenkins/code/
+BASE_PATH=/root/jenkins/jenkins-data/workspace/
 #docker脚本路径
 DOCKER_SCRIPT_PATH=/script/docker
 # 源项目工作空间
 #SOURCE_PATH=/var/lib/jenkins/workspace
 #docker 镜像路径，也是父项目路径
-PARENT_PATH=SpringCloud
+PARENT_PATH=cloud-gateway
 #docker 镜像/容器/项目名字或者jar名字数组 这里都使用项目名命名
 PROJECT_NAMES=("cloud-gateway") #("eureka-server" "feign-consumer" "api-gateway" "booking-service")
 #项目版本号/docker 容器tag,使用项目版本号来做tag，版本号要与项目数组PROJECT_NAMES一一对应

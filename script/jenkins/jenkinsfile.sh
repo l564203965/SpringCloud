@@ -1,4 +1,4 @@
-cd /app/web/jenkins/code/SpringCloud/cloud-gateway
+cd /root/jenkins/jenkins-data/workspace/cloud-gateway/cloud-gateway
 mvn clean package
 if [ -e "./volumes/app/cloud-gateway-1.0.0.jar" ]
  then rm -f ./volumes/app/cloud-gateway-1.0.0.jar \
