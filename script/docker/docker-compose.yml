@@ -3,9 +3,9 @@ aps-gateway:
 #    restart: always
   image: cloud-gateway-1.0.0
   container_name: cloud-gateway
-  networks:
-    chnet:
-      ipv4_address: 172.17.0.10
+#  networks:
+#    chnet:
+#      ipv4_address: 172.17.0.10
   volumes:
     - ./volumes/app:/app
   environment:
@@ -20,9 +20,9 @@ aps-gateway:
 #      - 8.8.8.8
 #      - 114.114.114.114
 
-networks:
-  cloudnt:
-    driver: bridge
-    ipam:
-      config:
-        - subnet: 172.17.0.0/16
+#networks:
+#  cloudnt:
+#    driver: bridge
+#    ipam:
+#      config:
+#        - subnet: 172.17.0.0/16
