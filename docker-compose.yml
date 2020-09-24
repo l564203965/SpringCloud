@@ -1,0 +1,28 @@
+# 网关-接入前置
+aps-gateway:
+#    restart: always
+  image: cloud-gateway
+  container_name: cloud-gateway
+#  networks:
+#    chnet:
+#      ipv4_address: 172.17.0.10
+#  volumes:
+#    - ./volumes/app:/app
+  environment:
+    - JAVA_OPTS=-Xmx512m -Xms256m -XX:MetaspaceSize=512M -XX:MaxMetaspaceSize=512M -XX:+PrintGCDetails -XX:+PrintGCDateStamps   -Djava.security.egd=file:/dev/./urandom
+#  expose:
+#    - 9090
+#    extra_hosts:                        # 设置容器 hosts
+#      - "elk.cloudyunyou.com:120.132.81.8"
+  ports:
+    - 9090:9090
+#    dns:
+#      - 8.8.8.8
+#      - 114.114.114.114
+
+#networks:
+#  cloudnt:
+#    driver: bridge
+#    ipam:
+#      config:
+#        - subnet: 172.17.0.0/16
