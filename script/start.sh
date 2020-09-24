@@ -12,7 +12,7 @@ PROJECT_NAMES=("cloud-gateway") #("eureka-server" "feign-consumer" "api-gateway"
 #项目版本号/docker 容器tag,使用项目版本号来做tag，版本号要与项目数组PROJECT_NAMES一一对应
 PROJECT_VERSIONS=1.0
 #docker容器暴露的端口，端口号要与项目数组PROJECT_NAMES一一对应，这里为了简化，docker容器端口与宿主机端口配置成一样的。
-EXPOSE_PORTS=("8081") #("1111" "9002" "5555" "8080")
+EXPOSE_PORTS=("9090") #("1111" "9002" "5555" "8080")
 
 ##############以下内容不用修改
 
