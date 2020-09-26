@@ -1,7 +1,6 @@
-##!/bin/bash
 #docker运行服务URL
 #操作//项目路径(Dockerfile存放的路劲)
-BASE_PATH=/root/jenkins/jenkins-data/workspace/
+BASE_PATH=/root/jenkins/jenkins-data/workspace/cloud-gateway/
 #docker脚本路径
 DOCKER_SCRIPT_PATH=/script/docker
 # 源项目工作空间
@@ -73,8 +72,13 @@ function delContainer(){
 
 }
 
+function mvnBuild(){
+  mvn clean package
+}
+
 # 运行docker容器
 function run(){
+    mvnBuild
     projectDir
     delContainer
     build
@@ -87,3 +91,4 @@ function run(){
 
 #入口
 run
+}
