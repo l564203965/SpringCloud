@@ -78,7 +78,7 @@ function mvnBuild(){
 
 # 运行docker容器
 function run(){
-    mvnBuild
+#    mvnBuild
     projectDir
     delContainer
     build
