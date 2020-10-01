@@ -1,6 +1,7 @@
 package com.example.core.redis;
 
 import org.redisson.Redisson;
+import org.redisson.RedissonRedLock;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
 import org.redisson.config.Config;
@@ -40,7 +41,24 @@ public class RedisTool {
     public void getDistributedLock(String lockKey, String requestId, int expireTime) throws InterruptedException {
         RLock lock = redissonClient.getLock(this.getClass().getSimpleName());
 
-        // or wait for lock aquisition up to 100 seconds
+
+        /*// redlock向n个redis实例尝试加锁,如果从大多数Redis节点（>= N/2+1）成功获取到了锁，并且获取锁总共消耗的时间没有超过锁的有效时间(lock validity time)，那么这时客户端才认为最终获取锁成功
+        RedissonRedLock redLock = new RedissonRedLock(lock1, lock2, lock3);
+        try {
+            // isLock = redLock.tryLock();
+            // 500ms拿不到锁, 就认为获取锁失败。10000ms即10s是锁失效时间。
+            isLock = redLock.tryLock(500, 10000, TimeUnit.MILLISECONDS);
+            System.out.println("isLock = "+isLock);
+            if (isLock) {
+                //TODO if get lock success, do something;
+            }
+        } catch (Exception e) {
+        } finally {
+            // 无论如何, 最后都要解锁
+            redLock.unlock();
+        }*/
+
+            // or wait for lock aquisition up to 100 seconds
         // and automatically unlock it after 10 seconds
         boolean res = lock.tryLock(100, 10, TimeUnit.SECONDS);
         if (res) {
