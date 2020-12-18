@@ -1,4 +1,3 @@
-##!/bin/bash
 #docker运行服务URL
 #操作//项目路径(Dockerfile存放的路劲)
 BASE_PATH=/root/jenkins/jenkins-data/workspace/

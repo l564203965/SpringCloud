@@ -4,9 +4,11 @@ server:
 spring:
   profiles:
     active: dev
+  aop:
+    proxy-target-class: true
   datasource:
     type: com.alibaba.druid.pool.DruidDataSource #Druid连接池
-    url: jdbc:mysql://122.51.89.168:3306/springboot?allowMultiQueries=true&autoReconnect=true&failOverReadOnly=false&maxReconnects=10&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
+    url: jdbc:mysql://150.158.176.115:3306/springboot?allowMultiQueries=true&autoReconnect=true&failOverReadOnly=false&maxReconnects=10&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
     username: root #数据库用户名
     password: liweng45 #数据库密码
     driver-class-name: com.mysql.cj.jdbc.Driver #mysql驱动
@@ -46,6 +48,12 @@ spring:
 
 mybatis:
   mapper-locations: classpath:/mapper/*.xml
+  #开启驼峰功能，关闭一级缓存
+  configuration:
+    map-underscore-to-camel-case: true
+    local-cache-scope: statement
+    cache-enabled: false
+    lazy-loading-enabled: false
 
 #ribbon配置
 ribbon:
@@ -71,6 +79,11 @@ feign:
 #  httpclient:
 #    enabled: false
 
+rocketmq:
+  name-server: 127.0.0.1:9876
+  producer:
+    group: producer_user1
+
 logging:
   config: classpath:logback-spring.xml
   level:
@@ -80,3 +93,25 @@ logging:
 #logging:
 #  level:
 #    root: DEBUG
+
+# seata配置
+#seata:
+#  #registry:
+#  #  type: nacos
+#  #  nacos:
+#  #    server-addr: localhost
+#  #config:
+#  #  type: nacos
+#  #  nacos:
+#  #    server-addr: localhost
+#  enabled: true
+#  tx-service-group: seata-nacos-group
+#  service:
+#    grouplist:
+#      default: 127.0.0.1:8091
+#    vgroup-mapping:
+#      seata-nacos-group: default
+#    disable-global-transaction: false
+#  client:
+#    rm:
+#      report-success-enable: false

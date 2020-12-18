@@ -86,7 +86,7 @@ function run(){
     #启动容器，我们采用docker compose来编排docker容器,解决docker容器之间网络访问的问题
     #先编写docker-compose.yml文件后，放入项目路径下
     cd  $BASE_PATH/$PARENT_PATH
-    docker-compose up -d
+    docker-compose -p cloud-gateway up -d
 }
 
 #入口

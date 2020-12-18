@@ -10,8 +10,10 @@ import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import redis.clients.jedis.Jedis;
+import redis.clients.jedis.Transaction;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -40,7 +42,6 @@ public class RedisTool {
      */
     public void getDistributedLock(String lockKey, String requestId, int expireTime) throws InterruptedException {
         RLock lock = redissonClient.getLock(this.getClass().getSimpleName());
-
 
         /*// redlock向n个redis实例尝试加锁,如果从大多数Redis节点（>= N/2+1）成功获取到了锁，并且获取锁总共消耗的时间没有超过锁的有效时间(lock validity time)，那么这时客户端才认为最终获取锁成功
         RedissonRedLock redLock = new RedissonRedLock(lock1, lock2, lock3);
@@ -128,8 +129,38 @@ public class RedisTool {
             }
             return false;
         });
-
-
-
     }
+
+    /**
+     * redis乐观锁
+     * @param key
+     * @return
+     */
+    public boolean optimisticLock (String key) {
+        return redisTemplate.execute((RedisCallback<Boolean>) redisConnection -> {
+            Jedis jedis = null;
+            try {
+                jedis = (Jedis) redisConnection.getNativeConnection();
+                jedis.watch(key);//监视商品键值对，作用时如果事务提交exec时发现监视的键值对发生变化，事务将被取消
+                int prdNum = Integer.parseInt(jedis.get(key));//当前商品个数
+                Transaction transaction = jedis.multi();//开启redis事务
+                transaction.set(key,String.valueOf(prdNum - 1));//商品数量减一
+                List<Object> result = ((redis.clients.jedis.Transaction) transaction).exec();//提交事务(乐观锁：提交事务的时候才会去检查key有没有被修改)
+                if (result == null || result.isEmpty()) {
+                    System.out.println("很抱歉，顾客:xxx没有抢到商品");// 可能是watch-key被外部修改，或者是数据操作被驳回
+                }else {
+                    // jedis.sadd(clientList, clientName);//抢到商品的话记录一下
+                    System.out.println("恭喜，顾客:xxx抢到商品");
+                    return true;
+                }
+            } catch (Exception e) {
+            }finally {
+                if (jedis != null) {
+                    jedis.close();
+                }
+            }
+            return false;
+        });
+    }
+
 }

@@ -4,3 +4,12 @@ server:
 spring:
   profiles:
     active: dev
+  aop:
+    proxy-target-class: true
+#开启驼峰功能，关闭一级缓存
+mybatis:
+  configuration:
+    map-underscore-to-camel-case: true
+    local-cache-scope: statement
+    cache-enabled: false
+    lazy-loading-enabled: false
